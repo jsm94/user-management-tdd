@@ -1,26 +1,46 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { yupResolver } from '@hookform/resolvers/yup'
+import axios from 'axios'
+import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { Inputs } from './login-page.interfaces'
+import { LoginErrorMessages, LoginInputs } from './login-page.interfaces'
 import { loginSchema } from './login-schema'
 import { useLoginMutation } from './use-login-mutation'
 
+const errorMessages: LoginErrorMessages = {
+  401: 'The email or password are not correct',
+  500: 'Unexpected error, please try again'
+}
+
 export const LoginPage = () => {
+  const [errorMessage, setErrorMessage] = useState<string>('')
+
   const mutation = useLoginMutation()
 
-  const { isLoading, isError } = mutation
+  const { isLoading } = mutation
 
   const {
     register,
     handleSubmit,
     formState: { errors }
-  } = useForm<Inputs>({
+  } = useForm<LoginInputs>({
     resolver: yupResolver(loginSchema)
   })
 
-  const onSubmit: SubmitHandler<Inputs> = async ({ email, password }) => {
-    mutation.mutate({ email, password })
+  const onSubmit: SubmitHandler<LoginInputs> = async ({ email, password }) => {
+    mutation.mutate(
+      { email, password },
+      {
+        onError: (error) => {
+          let internalErrorMessage = 'Unexpected error, please try again'
+          if (axios.isAxiosError(error) && error?.response?.status)
+            internalErrorMessage = errorMessages[error.response.status]
+
+          setErrorMessage(internalErrorMessage)
+        }
+      }
+    )
   }
 
   return (
@@ -34,9 +54,9 @@ export const LoginPage = () => {
             </p>
           )}
 
-          {isError && (
+          {errorMessage && (
             <p role="alert" aria-label="error">
-              Unexpected error, please try again
+              {errorMessage}
             </p>
           )}
 

@@ -8,8 +8,10 @@ import { LoginPage } from './login-page'
 
 const getSubmitButton = () => screen.getByRole('button', { name: /submit/i })
 
-const mockServerWithError = () =>
-  server.use(rest.post('/login', (req, res, ctx) => res(ctx.status(500))))
+const mockServerWithError = (statusCode: number) =>
+  server.use(
+    rest.post('/login', (req, res, ctx) => res(ctx.status(statusCode)))
+  )
 
 const fillAndSendLoginForm = async () => {
   await userEvent.type(screen.getByLabelText(/email/i), 'johndoe@domain.com')
@@ -78,11 +80,21 @@ test('it should show a loading indicator while submitting', async () => {
 })
 
 test('it should show the error message "Unexpected error, please try again" if the request fails', async () => {
-  mockServerWithError()
+  mockServerWithError(500)
 
   renderWithProviders(<LoginPage />)
 
   await fillAndSendLoginForm()
 
   expect(await screen.findByText(/Unexpected error, please try again/i))
+})
+
+test('it should show the error message "The email or password are not correct" when the credentials are invalid', async () => {
+  mockServerWithError(401)
+
+  renderWithProviders(<LoginPage />)
+
+  await fillAndSendLoginForm()
+
+  expect(await screen.findByText(/The email or password are not correct/i))
 })
