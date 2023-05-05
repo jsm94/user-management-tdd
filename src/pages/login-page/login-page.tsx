@@ -1,6 +1,8 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
+import { loginSchema } from './login-schema'
 
 type Inputs = {
   email: string
@@ -12,7 +14,9 @@ export const LoginPage = () => {
     register,
     handleSubmit,
     formState: { errors }
-  } = useForm<Inputs>()
+  } = useForm<Inputs>({
+    resolver: yupResolver(loginSchema)
+  })
 
   const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data)
 
@@ -28,7 +32,7 @@ export const LoginPage = () => {
             placeholder="Email"
             {...register('email', { required: true })}
           />
-          {errors.email && <p>The email is required</p>}
+          {errors?.email && <p>{errors?.email?.message}</p>}
 
           <Label htmlFor="password">Password</Label>
           <Input
@@ -37,7 +41,7 @@ export const LoginPage = () => {
             placeholder="Password"
             {...register('password', { required: true })}
           />
-          {errors.password && <p>The password is required</p>}
+          {errors?.password && <p>{errors?.password?.message}</p>}
 
           <button type="submit" name="submit">
             Submit

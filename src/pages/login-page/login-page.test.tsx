@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event'
 
 import { LoginPage } from './login-page'
 
+const getSubmitButton = () => screen.getByRole('button', { name: /submit/i })
+
 test('it should renderr login page', () => {
   render(<LoginPage />)
 
@@ -14,13 +16,13 @@ test('it should renders the form elements', () => {
 
   expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
   expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
-  expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument()
+  expect(getSubmitButton()).toBeInTheDocument()
 })
 
 test('it should validate the inputs as required', async () => {
   render(<LoginPage />)
 
-  userEvent.click(screen.getByRole('button', { name: /submit/i }))
+  userEvent.click(getSubmitButton())
 
   expect(await screen.findByText(/The email is required/i)).toBeInTheDocument()
   expect(
