@@ -9,7 +9,7 @@ import { useLoginMutation } from './use-login-mutation'
 export const LoginPage = () => {
   const mutation = useLoginMutation()
 
-  const { isLoading } = mutation
+  const { isLoading, isError } = mutation
 
   const {
     register,
@@ -33,6 +33,13 @@ export const LoginPage = () => {
               Loading...
             </p>
           )}
+
+          {isError && (
+            <p role="alert" aria-label="error">
+              Unexpected error, please try again
+            </p>
+          )}
+
           <Label htmlFor="email">Email</Label>
           <Input
             type="email"

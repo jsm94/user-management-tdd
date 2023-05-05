@@ -2,9 +2,21 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { renderWithProviders } from '@/mocks/render-with-providers'
+import { server } from '@/mocks/server'
+import { rest } from 'msw'
 import { LoginPage } from './login-page'
 
 const getSubmitButton = () => screen.getByRole('button', { name: /submit/i })
+
+const mockServerWithError = () =>
+  server.use(rest.post('/login', (req, res, ctx) => res(ctx.status(500))))
+
+const fillAndSendLoginForm = async () => {
+  await userEvent.type(screen.getByLabelText(/email/i), 'johndoe@domain.com')
+  await userEvent.type(screen.getByLabelText(/password/i), '123456')
+
+  await userEvent.click(getSubmitButton())
+}
 
 test('it should renderr login page', () => {
   renderWithProviders(<LoginPage />)
@@ -46,10 +58,7 @@ test('it should disable the submit button while submitting', async () => {
 
   expect(getSubmitButton()).not.toBeDisabled()
 
-  await userEvent.type(screen.getByLabelText(/email/i), 'johndoe@domain.com')
-  await userEvent.type(screen.getByLabelText(/password/i), '123456')
-
-  await userEvent.click(getSubmitButton())
+  await fillAndSendLoginForm()
 
   expect(getSubmitButton()).toBeDisabled()
 })
@@ -57,14 +66,23 @@ test('it should disable the submit button while submitting', async () => {
 test('it should show a loading indicator while submitting', async () => {
   renderWithProviders(<LoginPage />)
 
-  expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+  expect(
+    screen.queryByRole('progressbar', { name: /loading/i })
+  ).not.toBeInTheDocument()
 
-  await userEvent.type(screen.getByLabelText(/email/i), 'johndoe@domain.com')
-  await userEvent.type(screen.getByLabelText(/password/i), '123456')
-
-  await userEvent.click(getSubmitButton())
+  await fillAndSendLoginForm()
 
   expect(
     await screen.findByRole('progressbar', { name: /loading/i })
   ).toBeInTheDocument()
+})
+
+test('it should show the error message "Unexpected error, please try again" if the request fails', async () => {
+  mockServerWithError()
+
+  renderWithProviders(<LoginPage />)
+
+  await fillAndSendLoginForm()
+
+  expect(await screen.findByText(/Unexpected error, please try again/i))
 })
