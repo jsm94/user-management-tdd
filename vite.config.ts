@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   test: {
     globals: true,
-    environment: 'happy-dom',
+    environment: 'jsdom', // TODO: happy-dom has better performance, but we need to configure baseUrl on axios
     setupFiles: '.vitest/setup',
     include: ['**/test.{ts,tsx}', '**/*.test.{ts,tsx}']
   }
