@@ -53,3 +53,18 @@ test('it should disable the submit button while submitting', async () => {
 
   expect(getSubmitButton()).toBeDisabled()
 })
+
+test('it should show a loading indicator while submitting', async () => {
+  renderWithProviders(<LoginPage />)
+
+  expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+
+  await userEvent.type(screen.getByLabelText(/email/i), 'johndoe@domain.com')
+  await userEvent.type(screen.getByLabelText(/password/i), '123456')
+
+  await userEvent.click(getSubmitButton())
+
+  expect(
+    await screen.findByRole('progressbar', { name: /loading/i })
+  ).toBeInTheDocument()
+})

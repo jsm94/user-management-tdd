@@ -1,25 +1,13 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { yupResolver } from '@hookform/resolvers/yup'
-import axios from 'axios'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { useMutation } from 'react-query'
+import { Inputs } from './login-page.interfaces'
 import { loginSchema } from './login-schema'
-
-type Inputs = {
-  email: string
-  password: string
-}
-
-const loginService = async (email: string, password: string) => {
-  const response = await axios.post('/login', { email, password })
-  return response.data
-}
+import { useLoginMutation } from './use-login-mutation'
 
 export const LoginPage = () => {
-  const mutation = useMutation(({ email, password }: Inputs) =>
-    loginService(email, password)
-  )
+  const mutation = useLoginMutation()
 
   const { isLoading } = mutation
 
@@ -40,6 +28,11 @@ export const LoginPage = () => {
       <h1>Login</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid w-full max-w-sm items-center gap-1.5">
+          {isLoading && (
+            <p role="progressbar" aria-label="loading">
+              Loading...
+            </p>
+          )}
           <Label htmlFor="email">Email</Label>
           <Input
             type="email"
