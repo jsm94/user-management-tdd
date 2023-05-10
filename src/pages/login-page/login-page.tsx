@@ -1,5 +1,6 @@
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { InputGroup } from '@/components/ui/input-group'
+import { Typography } from '@/components/ui/typography'
 import { yupResolver } from '@hookform/resolvers/yup'
 import axios from 'axios'
 import { useState } from 'react'
@@ -44,45 +45,57 @@ export const LoginPage = () => {
   }
 
   return (
-    <div>
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid w-full max-w-sm items-center gap-1.5">
-          {isLoading && (
-            <p role="progressbar" aria-label="loading">
-              Loading...
-            </p>
-          )}
+    <div className="grid h-screen place-items-center">
+      <div className="flex w-96 flex-col gap-10">
+        <Typography className="text-center" variant="h1">
+          Login
+        </Typography>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="flex flex-col gap-6">
+            {isLoading && (
+              <p role="progressbar" aria-label="loading">
+                Loading...
+              </p>
+            )}
 
-          {errorMessage && (
-            <p role="alert" aria-label="error">
-              {errorMessage}
-            </p>
-          )}
+            {errorMessage && (
+              <p role="alert" aria-label="error">
+                {errorMessage}
+              </p>
+            )}
 
-          <Label htmlFor="email">Email</Label>
-          <Input
-            type="email"
-            id="email"
-            placeholder="Email"
-            {...register('email', { required: true })}
-          />
-          {errors?.email && <p>{errors?.email?.message}</p>}
+            <InputGroup>
+              <InputGroup.Label htmlFor="email">Email</InputGroup.Label>
+              <InputGroup.LabelError>
+                {errors?.email?.message}
+              </InputGroup.LabelError>
+              <InputGroup.Input
+                type="email"
+                id="email"
+                placeholder="your@email.com"
+                {...register('email', { required: true })}
+              />
+            </InputGroup>
 
-          <Label htmlFor="password">Password</Label>
-          <Input
-            type="password"
-            id="password"
-            placeholder="Password"
-            {...register('password', { required: true })}
-          />
-          {errors?.password && <p>{errors?.password?.message}</p>}
+            <InputGroup>
+              <InputGroup.Label htmlFor="password">Password</InputGroup.Label>
+              <InputGroup.LabelError>
+                {errors?.password?.message}
+              </InputGroup.LabelError>
+              <InputGroup.Input
+                type="password"
+                id="password"
+                placeholder="********"
+                {...register('password', { required: true })}
+              />
+            </InputGroup>
 
-          <button type="submit" name="submit" disabled={isLoading}>
-            Submit
-          </button>
-        </div>
-      </form>
+            <Button type="submit" name="submit" disabled={isLoading}>
+              Submit
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }
