@@ -68,15 +68,11 @@ test('it should disable the submit button while submitting', async () => {
 test('it should show a loading indicator while submitting', async () => {
   renderWithProviders(<LoginPage />)
 
-  expect(
-    screen.queryByRole('progressbar', { name: /loading/i })
-  ).not.toBeInTheDocument()
+  expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
 
   await fillAndSendLoginForm()
 
-  expect(
-    await screen.findByRole('progressbar', { name: /loading/i })
-  ).toBeInTheDocument()
+  expect(await screen.queryByRole('progressbar')).toBeInTheDocument()
 })
 
 test('it should show the error message "Unexpected error, please try again" if the request fails', async () => {

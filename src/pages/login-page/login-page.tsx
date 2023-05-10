@@ -52,12 +52,6 @@ export const LoginPage = () => {
         </Typography>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-6">
-            {isLoading && (
-              <p role="progressbar" aria-label="loading">
-                Loading...
-              </p>
-            )}
-
             {errorMessage && (
               <p role="alert" aria-label="error">
                 {errorMessage}
@@ -90,9 +84,16 @@ export const LoginPage = () => {
               />
             </InputGroup>
 
-            <Button type="submit" name="submit" disabled={isLoading}>
-              Submit
-            </Button>
+            <div className="flex self-end">
+              <Button
+                type="submit"
+                name="submit"
+                disabled={isLoading}
+                loading={isLoading}
+              >
+                Submit
+              </Button>
+            </div>
           </div>
         </form>
       </div>
