@@ -34,7 +34,7 @@ const InputGroup = ({ className, children }: InputGroupComponent) => {
   const input = childrenArray.find(
     (child) => React.isValidElement(child) && child.type === Input
   )
-  console.log(labelError)
+
   const cvaClasses =
     React.isValidElement(labelError) && labelError.props.children
       ? inputVariants({ variant: 'error' })

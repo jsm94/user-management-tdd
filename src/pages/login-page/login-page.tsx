@@ -34,11 +34,11 @@ export const LoginPage = () => {
       { email, password },
       {
         onError: (error) => {
-          let internalErrorMessage = 'Unexpected error, please try again'
+          let internalErrorMessage = errorMessages[500]
           if (axios.isAxiosError(error) && error?.response?.status)
-            internalErrorMessage = errorMessages[error.response.status]
+            internalErrorMessage ||= errorMessages[error.response.status]
 
-          setErrorMessage(internalErrorMessage)
+          setErrorMessage(internalErrorMessage || errorMessages[500])
         }
       }
     )
