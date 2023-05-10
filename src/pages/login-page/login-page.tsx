@@ -10,6 +10,7 @@ import { loginSchema } from './login-schema'
 import { useLoginMutation } from './use-login-mutation'
 
 const errorMessages: LoginErrorMessages = {
+  400: 'The email or password are not correct',
   401: 'The email or password are not correct',
   500: 'Unexpected error, please try again'
 }
@@ -36,9 +37,10 @@ export const LoginPage = () => {
         onError: (error) => {
           let internalErrorMessage = errorMessages[500]
           if (axios.isAxiosError(error) && error?.response?.status)
-            internalErrorMessage ||= errorMessages[error.response.status]
+            internalErrorMessage =
+              errorMessages[error.response.status] || internalErrorMessage
 
-          setErrorMessage(internalErrorMessage || errorMessages[500])
+          setErrorMessage(internalErrorMessage)
         }
       }
     )
