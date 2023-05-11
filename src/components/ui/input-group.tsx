@@ -5,6 +5,7 @@ import { cva } from 'class-variance-authority'
 import { Input } from './input'
 import { Label } from './label'
 import { LabelError } from './label-error'
+import { Select } from './select'
 
 // eslint-disable-next-line tailwindcss/no-custom-classname
 const inputVariants = cva([], {
@@ -32,7 +33,9 @@ const InputGroup = ({ className, children }: InputGroupComponent) => {
   )
 
   const input = childrenArray.find(
-    (child) => React.isValidElement(child) && child.type === Input
+    (child) =>
+      React.isValidElement(child) &&
+      (child.type === Input || child.type === Select)
   )
 
   const cvaClasses =
