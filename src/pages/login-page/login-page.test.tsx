@@ -23,7 +23,7 @@ const fillAndSendLoginForm = async () => {
   await userEvent.click(getSubmitButton())
 }
 
-test('it should renderr login page', () => {
+test('it should render login page', () => {
   renderWithProviders(<LoginPage />)
 
   expect(screen.getByRole('heading', { name: /login/i })).toBeInTheDocument()
@@ -61,7 +61,7 @@ test('it should validate email format', async () => {
 test('it should disable the submit button while submitting', async () => {
   renderWithProviders(<LoginPage />)
 
-  expect(getSubmitButton()).not.toBeDisabled()
+  expect(getSubmitButton()).toBeEnabled()
 
   await fillAndSendLoginForm()
 
