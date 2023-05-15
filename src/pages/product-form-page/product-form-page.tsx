@@ -10,10 +10,9 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Typography } from '@/components/ui/typography'
-import { baseUrl } from '@/config'
 import axios from 'axios'
 import React from 'react'
-import { PRODUCT_HTTP_STATUS } from './product-form-page.interfaces'
+import { useProductMutation } from './use-product-mutation'
 
 type CreateProductsInputs = {
   name: HTMLInputElement
@@ -22,7 +21,6 @@ type CreateProductsInputs = {
 }
 
 const ProductFormPage = () => {
-  const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false)
   const [isSuccess, setIsSuccess] = React.useState<boolean>(false)
   const [errorMessage, setErrorMessage] = React.useState<string>('')
   const [typeSelectorValue, setTypeSelectorValue] = React.useState<
@@ -33,6 +31,10 @@ const ProductFormPage = () => {
     size: '',
     type: ''
   })
+
+  const mutation = useProductMutation()
+
+  const { isLoading } = mutation
 
   const validateField = ({ name, value }: { name: string; value: string }) => {
     setFormError((prev) => ({
@@ -50,36 +52,34 @@ const ProductFormPage = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    setIsSubmitting(true)
-
     const { name, size, type } = event.currentTarget
       .elements as typeof event.currentTarget.elements & CreateProductsInputs
 
     validateForm({ name, size, type })
 
-    try {
-      const response = await axios.post(`${baseUrl}/products`, {
+    mutation.mutate(
+      {
         name: name.value,
         size: size.value,
         type: type.value
-      })
-      if (response.status === PRODUCT_HTTP_STATUS.CREATED) {
-        ;(event.target as HTMLFormElement).reset()
-        setTypeSelectorValue('')
-        setIsSuccess(true)
-      }
-    } catch (error) {
-      console.log(error)
-      if (axios.isAxiosError(error) && error?.response?.data?.message) {
-        setErrorMessage(error?.response?.data?.message)
-      } else {
-        setErrorMessage('Unexpected error, please try again')
-      }
+      },
+      {
+        onSuccess: () => {
+          ;(event.target as HTMLFormElement).reset()
+          setTypeSelectorValue('')
+          setIsSuccess(true)
+        },
+        onError: (error) => {
+          if (axios.isAxiosError(error) && error?.response?.data?.message) {
+            setErrorMessage(error?.response?.data?.message)
+          } else {
+            setErrorMessage('Unexpected error, please try again')
+          }
 
-      setIsSuccess(false)
-    }
-
-    setIsSubmitting(false)
+          setIsSuccess(false)
+        }
+      }
+    )
   }
 
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
@@ -142,11 +142,7 @@ const ProductFormPage = () => {
                 </SelectContent>
               </Select>
             </InputGroup>
-            <Button
-              disabled={isSubmitting}
-              loading={isSubmitting}
-              type="submit"
-            >
+            <Button disabled={isLoading} loading={isLoading} type="submit">
               Submit
             </Button>
           </div>

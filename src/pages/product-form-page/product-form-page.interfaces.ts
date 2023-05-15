@@ -9,6 +9,10 @@ export type ProductFormInputs = {
   type: string
 }
 
+export type ProductFormResponse = {
+  message: string
+}
+
 export type ProductFormErrorMessages = {
   [key: string]: string
 }

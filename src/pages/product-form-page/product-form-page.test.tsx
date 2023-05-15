@@ -1,6 +1,7 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 
 import { baseUrl } from '@/config'
+import { renderWithProviders } from '@/mocks/render-with-providers'
 import { server } from '@/mocks/server'
 import { rest } from 'msw'
 import { ProductFormPage } from './product-form-page'
@@ -14,7 +15,7 @@ const mockServerWithError = (statusCode: number, message: string) =>
 
 describe('when the form is mounted', () => {
   beforeEach(() => {
-    render(<ProductFormPage />)
+    renderWithProviders(<ProductFormPage />)
   })
 
   it('it should render the create product form page', () => {
@@ -40,7 +41,7 @@ describe('when the form is mounted', () => {
 
 describe('when the form is submitted', () => {
   beforeEach(() => {
-    render(<ProductFormPage />)
+    renderWithProviders(<ProductFormPage />)
   })
 
   it('it should display validation messages', () => {
@@ -60,7 +61,7 @@ describe('when the form is submitted', () => {
 
 describe('when the user blurs an empty input field', () => {
   it('it should display a validation message', () => {
-    render(<ProductFormPage />)
+    renderWithProviders(<ProductFormPage />)
 
     const nameInput = screen.getByLabelText(/name/i)
     const sizeInput = screen.getByLabelText(/size/i)
@@ -75,7 +76,7 @@ describe('when the user blurs an empty input field', () => {
 
 describe('when the user submits the form with valid data', () => {
   it('should the submit button be disabled until the request is done', async () => {
-    render(<ProductFormPage />)
+    renderWithProviders(<ProductFormPage />)
 
     const submitButton = screen.getByRole('button', { name: /submit/i })
 
@@ -91,7 +92,7 @@ describe('when the user submits the form with valid data', () => {
   })
 
   it('should shows a success message "Product stored" and clean the form', async () => {
-    render(<ProductFormPage />)
+    renderWithProviders(<ProductFormPage />)
 
     const submitButton = screen.getByRole('button', { name: /submit/i })
     const nameInput = screen.getByLabelText(/name/i)
@@ -115,7 +116,7 @@ describe('when the user submits the form with valid data', () => {
 
 describe('when the user submits the form and the server returns an unexpected error', () => {
   it('should shows an error message "Unexpected error, please try again"', async () => {
-    render(<ProductFormPage />)
+    renderWithProviders(<ProductFormPage />)
 
     const submitButton = screen.getByRole('button', { name: /submit/i })
 
@@ -136,7 +137,7 @@ describe('when the user submits the form and the server returns a validation err
       'The form is invalid, please check the required fields'
     )
 
-    render(<ProductFormPage />)
+    renderWithProviders(<ProductFormPage />)
 
     const submitButton = screen.getByRole('button', { name: /submit/i })
 
